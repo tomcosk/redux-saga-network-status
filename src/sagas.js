@@ -1,19 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import range from 'lodash/fp/range';
-import {
-  delay,
-  takeLatest,
-} from 'redux-saga';
-import {
-  call,
-  cancel,
-  cancelled,
-  fork,
-  join,
-  put,
-  race,
-  take,
-} from 'redux-saga/effects';
+import { delay, takeLatest, call, cancel, cancelled, fork, join, put, race, take } from 'redux-saga/effects';
 
 import {
   backoff,
@@ -25,7 +12,7 @@ import {
   pingCancel,
   pingFailure,
   pingPending,
-  pingSuccess,
+  pingSuccess
 } from './actions';
 import {
   BACKOFF,
@@ -36,11 +23,9 @@ import {
   PING_CANCEL,
   PING_FAILURE,
   PING_SUCCESS,
-  START_WATCH_NETWORK_STATUS,
+  START_WATCH_NETWORK_STATUS
 } from './actionTypes';
-import {
-  once,
-} from './utils';
+import { once } from './utils';
 
 export function* watchWindowOnline() {
   while (true) {
@@ -89,7 +74,7 @@ export function* handlePing({ type, payload: pingUrl }) {
     const { ping: response } = yield race({
       ping: call(fetch, pingUrl),
       // Timeout if ping takes longer than 5 seconds
-      timeout: call(delay, 5000),
+      timeout: call(delay, 5000)
     });
     if (response) {
       if (response.ok) {
@@ -133,9 +118,10 @@ export function* watchPing() {
  *   Total number of milliseconds during which COUNT_DOWN actions will be dispatched.
  */
 export function* handleBackoff({ payload: ms }) {
-  const intervalLength = 1000;  // count down by one second at a time
+  const intervalLength = 1000; // count down by one second at a time
   const intervalCount = Math.floor(ms / intervalLength);
-  for (const i of range(0, intervalCount)) {  // eslint-disable-line no-unused-vars
+  for (const i of range(0, intervalCount)) {
+    // eslint-disable-line no-unused-vars
     yield put(countDown(intervalLength));
     yield call(delay, intervalLength);
   }
@@ -170,7 +156,7 @@ export function* watchBackoff() {
  */
 export function getNextFibonacciValue(randomizationFactor, previous, current) {
   const next = previous + current;
-  return next + (next * randomizationFactor * Math.random());
+  return next + next * randomizationFactor * Math.random();
 }
 
 /**
@@ -207,7 +193,7 @@ export function* fibonacciPoll(pingUrl, { randomizationFactor, initialDelay, max
       // Wait for a manual ping, or until the backoff has completed.
       const winner = yield race({
         backoffComplete: take(BACKOFF_COMPLETE),
-        ping: take(PING),
+        ping: take(PING)
       });
       if (winner.backoffComplete) {
         // Delay has elapsed; trigger another ping
@@ -239,7 +225,7 @@ export default function* watchNetworkStatus() {
     const pollTask = yield fork(fibonacciPoll, pingUrl, {
       randomizationFactor: 0.5,
       initialDelay: 500,
-      maxDelay: 10000,
+      maxDelay: 10000
     });
     // Stop polling when navigator is offline
     yield take(NAVIGATOR_OFFLINE);
