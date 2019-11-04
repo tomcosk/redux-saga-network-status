@@ -8,7 +8,7 @@
     "develop": "npm run build -- --watch",
     "jest": "jest",
     "lint": "eslint src",
-    "postinstall": "npm run build",
+    "postinstall": "sleep 30 && pwd && npm run build",
     "test": "npm run lint && npm run jest"
   },
   "repository": {
