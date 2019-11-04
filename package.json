@@ -8,6 +8,7 @@
     "develop": "npm run build -- --watch",
     "jest": "jest",
     "lint": "eslint src",
+    "postinstall": "cd node_modules/redux-saga-network-status/ && npm run build",
     "test": "npm run lint && npm run jest"
   },
   "repository": {
